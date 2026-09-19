@@ -29,7 +29,7 @@ export const DESTINATIONS: Record<DestinationId, Destination> = {
     photos: { left: 'cn-pku-boya-tower', right: 'cn-tsinghua-old-gate', hero: 'cn-tsinghua-old-gate' },
     localLanguage: { language: 'Chinese', test: 'HSK' },
     teachingNote:
-      'Most bachelor programmes for international students are taught in Chinese (HSK 5 or 6). A few colleges teach in English.',
+      'Many bachelor programmes for international students are taught in Chinese (HSK 5 or 6). CUHK-Shenzhen, XJTLU, UNNC, SJTU Global College and Fudan international programmes teach in English.',
     visa: {
       text: 'For study longer than 180 days you need an X1 student visa. Apply at the Chinese Embassy with your admission notice and the JW201 or JW202 form your university sends you.',
       url: 'https://kz.china-embassy.gov.cn/',
@@ -70,7 +70,7 @@ export const DESTINATIONS: Record<DestinationId, Destination> = {
     photos: { left: 'kr-yonsei-underwood-hall', right: 'kr-seoul-skyline', hero: 'kr-yonsei-underwood-hall' },
     localLanguage: { language: 'Korean', test: 'TOPIK' },
     teachingNote:
-      'KAIST and Yonsei Underwood International College teach in English. Most other programmes teach mainly in Korean (TOPIK).',
+      'KAIST, POSTECH, UNIST, GIST and Yonsei Underwood International College teach in English. Most other programmes teach mainly in Korean (TOPIK).',
     visa: {
       text: 'After admission you apply for a D-2 student visa with your certificate of admission. The Korea Visa Portal explains the documents.',
       url: 'https://www.visa.go.kr/',
@@ -91,7 +91,7 @@ export const DESTINATIONS: Record<DestinationId, Destination> = {
     photos: { left: 'jp-kyoto-clock-tower', right: 'jp-waseda-okuma', hero: 'jp-kyoto-clock-tower' },
     localLanguage: { language: 'Japanese', test: 'JLPT' },
     teachingNote:
-      'The programmes listed here accept students without Japanese. Kyoto iUP teaches you Japanese and the final two years are mainly in Japanese.',
+      'Every programme listed here accepts students without Japanese. Kyoto iUP teaches you Japanese, and its final two years are mainly in Japanese.',
     visa: {
       text: 'Your university applies for a Certificate of Eligibility (COE) for you. With the COE you then get a Student visa at the Embassy of Japan.',
       url: 'https://www.studyinjapan.go.jp/en/planning/',

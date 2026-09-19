@@ -95,7 +95,7 @@ npm test
 
 | Path | What it is |
 | --- | --- |
-| `src/data/universities.ts` | The 14 universities, with sources |
+| `src/data/universities.ts` | The 28 universities, with sources |
 | `src/lib/scoring.ts` | How the fit forecast is calculated (explained on the site) |
 | `src/lib/roadmap.ts` | Action plan and checklist tasks |
 | `src/landing/`, `src/onboarding/`, `src/dashboard/` | Home page, questionnaire, results |

@@ -55,7 +55,7 @@ export function buildTasks(profile: Profile, top: Match[]): Task[] {
       detail: `Explain why ${profile.focus ? profile.focus.toLowerCase() : 'your field'} and why each university. Reuse the core, tailor the ending.`,
     },
   );
-  const needLetters = top.filter((m) => ['kaist', 'snu'].includes(m.university.id)).map((m) => m.university.shortName);
+  const needLetters = top.filter((m) => ['kaist', 'snu', 'fudan'].includes(m.university.id)).map((m) => m.university.shortName);
   tasks.push({
     id: 'doc-recommendation',
     milestone: 'documents',

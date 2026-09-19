@@ -21,7 +21,7 @@ interface DashboardProps {
   onStartOver: () => void;
 }
 
-const WINDOW_SHORT = { open: 'Open', upcoming: 'Opens soon', closed: 'Closed', unpublished: 'Not published' } as const;
+const WINDOW_SHORT = { open: 'Open', upcoming: 'Ahead', closed: 'Closed', unpublished: 'Not published' } as const;
 
 function CompareTable({ matches }: { matches: Match[] }) {
   return (

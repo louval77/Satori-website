@@ -158,6 +158,9 @@ function languageFactor(u: University, option: ProgramOption, profile: Profile):
 
 function budgetFactor(u: University, option: ProgramOption, profile: Profile, tuitionUsd: number | null): RawFactor {
   const max = WEIGHTS.budget;
+  if (option.coveredForAll && tuitionUsd === null) {
+    return { key: 'budget', max, points: max, note: 'Tuition is waived for every admitted international student.' };
+  }
   if (tuitionUsd === null) {
     return { key: 'budget', max, points: 12, note: `${u.shortName} fee not published on the pages we checked, so this factor is neutral.` };
   }
@@ -227,6 +230,8 @@ export function windowStatusFor(u: University, targetYear: number, today: Date):
     if (w.to && w.to < day) return { w, s: 'closed' as const };
     if (w.from && w.from > day) return { w, s: 'upcoming' as const };
     if (!w.from && !w.to) return { w, s: 'unpublished' as const };
+    // Only a deadline is published: the window is ahead, but we cannot say it has opened.
+    if (!w.from) return { w, s: 'upcoming' as const };
     return { w, s: 'open' as const };
   });
   const pick =

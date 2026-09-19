@@ -9,7 +9,7 @@ import { FACTOR_LABEL, type Match, type WindowStatus } from '../lib/scoring';
 
 const STATUS_LABEL: Record<WindowStatus, string> = {
   open: 'Applications open',
-  upcoming: 'Opens soon',
+  upcoming: 'Next window ahead',
   closed: 'Window closed',
   unpublished: 'Dates not published yet',
 };
@@ -29,7 +29,10 @@ function languageSummary(m: Match): string {
 
 export function costSummary(m: Match): { main: string; sub: string } {
   const t = m.option.tuition;
-  if (!t) return { main: 'Not published', sub: m.option.tuitionNote ?? 'See the official fee page' };
+  if (!t) {
+    if (m.option.coveredForAll) return { main: 'Tuition fully waived', sub: m.option.tuitionNote ?? '' };
+    return { main: 'Not published', sub: m.option.tuitionNote ?? 'See the official fee page' };
+  }
   const local = `${formatMoney(t.amount, t.currency)} per ${t.per}`;
   return {
     main:
