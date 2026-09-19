@@ -1,0 +1,26 @@
+# Installed libraries (recreated by "npm install")
+node_modules/
+
+# Build output (recreated by "npm run build")
+dist/
+dist-test/
+dist-lh/
+
+# Test output
+test-results/
+playwright-report/
+
+# PRIVATE: developer access code. Never upload these.
+.dev-access.json
+DEVELOPER-ACCESS.txt
+
+# Large original photos (the compressed copies in public/images are what the site uses)
+scripts/.raw/
+scripts/.og-template.html
+
+# Local environment files and logs
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db

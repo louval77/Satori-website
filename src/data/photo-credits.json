@@ -1,0 +1,82 @@
+[
+  {
+    "id": "cn-pku-boya-tower",
+    "destination": "CN",
+    "alt": "Boya Pagoda rising above the trees on the Peking University campus in Beijing",
+    "title": "Peking University tower",
+    "author": "ml_duong",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Peking_University_tower.jpg"
+  },
+  {
+    "id": "cn-tsinghua-old-gate",
+    "destination": "CN",
+    "alt": "The white Old Gate of Tsinghua University in Beijing on a rainy day",
+    "title": "Former gate of Tsinghua University 2",
+    "author": "そらみみ (Soramimi)",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Former_gate_of_Tsinghua_University_2.JPG"
+  },
+  {
+    "id": "hk-hku-main-building",
+    "destination": "HK",
+    "alt": "The historic Main Building of the University of Hong Kong with its clock tower",
+    "title": "Main Building HKU 20100926 03",
+    "author": "Ka-Fai,So",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Main_Building_HKU_20100926_03.JPG"
+  },
+  {
+    "id": "hk-victoria-harbour",
+    "destination": "HK",
+    "alt": "Hong Kong Island skyscrapers lit up at night across Victoria Harbour",
+    "title": "Victoria Harbour skyscrapers",
+    "author": "Wilfredor",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Victoria_Harbour_skyscrapers.jpg"
+  },
+  {
+    "id": "kr-yonsei-underwood-hall",
+    "destination": "KR",
+    "alt": "Ivy-covered Underwood Hall at Yonsei University in Seoul behind a formal garden",
+    "title": "Underwood Hall Front",
+    "author": "Tungdangthanh",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Underwood_Hall_Front.jpg"
+  },
+  {
+    "id": "kr-seoul-skyline",
+    "destination": "KR",
+    "alt": "Seoul skyline at night with Lotte World Tower reflected in the Han River",
+    "title": "Seoul Skyline Night 2018",
+    "author": "mauveine.kim",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Seoul_Skyline_Night_2018.jpg"
+  },
+  {
+    "id": "jp-kyoto-clock-tower",
+    "destination": "JP",
+    "alt": "Kyoto University clock tower seen through cherry blossom branches",
+    "title": "Kyoto University clocktower from north",
+    "author": "KATSURA Roen",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kyoto_University_clocktower_from_north.JPG"
+  },
+  {
+    "id": "jp-waseda-okuma",
+    "destination": "JP",
+    "alt": "Okuma Auditorium clock tower and the Okuma statue at Waseda University in Tokyo",
+    "title": "Waseda University - Okuma Statue and Okuma Auditorium",
+    "author": "XIIIfromTOKYO",
+    "license": "Public domain",
+    "licenseUrl": null,
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Waseda_University_-_Okuma_Statue_and_Okuma_Auditorium.JPG"
+  }
+]
