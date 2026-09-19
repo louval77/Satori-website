@@ -1,106 +1,111 @@
 # SATORI · Personal Admission Route
 
-A website that turns a student's grades, English score, budget and goals into a personal, step-by-step plan for bachelor's admission in **Mainland China, Hong Kong SAR, South Korea and Japan**: matched universities, real application dates and a checklist.
+> SATORI помогает абитуриентам находить программы бакалавриата с **полным финансовым покрытием** — обучение и проживание (Full-Ride / 100% Full Financial Aid) — в **Материковом Китае, Гонконге, Южной Корее и Японии**. Сервис переводит оценки, балл по английскому, бюджет и цели абитуриента в персональный пошаговый план поступления: подобранные университеты, реальные сроки подачи документов и чек-лист.
 
-Built by team SATORI (Kazakhstan) for Case 02: University Admissions in East Asia.
+Разработано командой **SATORI** (Казахстан) для кейса *«Case 02: University Admissions in East Asia»*.
 
----
+🔗 **Демо:** https://louval77.github.io/Satori-website/
 
-## 1. Open the site on your own computer (easiest way)
+## Ключевое отличие
 
-1. Install **Node.js LTS** from <https://nodejs.org> if it is not installed yet (this computer already has it).
-2. Open this folder and **double-click `START-SITE.bat`**.
-3. Wait for the black window to finish (the first start takes about a minute). Your browser opens the site at **http://localhost:4173**.
-4. Keep the black window open while you use the site. Close it to stop.
+В отличие от общих агенств по поступлению, SATORI фильтрует и ранжирует **только программы с полным покрытием стоимости обучения и проживания, а также варианты для собственного бюджета (с помощью ползунка)**, а не любые доступные варианты — это и есть основной критерий подбора, а не побочный фильтр.
 
-<details>
-<summary>The same thing with typed commands</summary>
+## Что делает сервис
 
-Open a terminal in this folder and run:
+**Персональный маршрут** — на основе анкеты (оценки, английский, бюджет, цели) подбираются программы с полным покрытием
+**База из 28 университетов** в 4 направлениях, каждая запись — со ссылкой на официальный источник и датой проверки
+**Алгоритм соответствия (fit forecast)** — правило-ориентированный скоринг, оценивающий шансы абитуриента по каждой программе; методика объясняется на сайте
+ **Пошаговый план и чек-лист** для подачи документов
+**Бесплатный тариф** — топ-3 университета, план действий и чек-лист
+**Pro-тариф** (план: $29/мес или $119/год) — полный список подходящих программ и таблица сравнения. Приём оплаты пока **отключён**: кнопки честно сообщают об этом, данные карт не запрашиваются
 
-```bash
-npm install
-npm run build
-npm run preview
+## AI Architecture (Roadmap)
+
+Текущая версия использует детерминированный, правило-ориентированный скоринг (`src/lib/scoring.ts`) — без обращения к внешним LLM во время работы сайта. Это осознанный выбор для MVP: логика полностью прозрачна и объяснима абитуриенту.
+
+Следующая итерация продукта предполагает интеграцию LLM для двух сценариев:
+
+```
+Пользователь → Клиент (SPA)
+                  │
+                  ▼
+        Serverless-функция (Vercel / Cloudflare Functions)
+                  │  (API-ключ хранится на сервере, не в клиенте)
+                  ▼
+            LLM API (Gemini / OpenAI)
+                  │
+      ┌───────────┴────────────┐
+      ▼                        ▼
+Гибкий скоринг анкеты   Разбор и обратная связь
+(доп. к scoring.ts)     по мотивационному эссе
 ```
 
-Then open http://localhost:4173. For live editing while you change code, use `npm run dev` instead.
-</details>
+- **Гибкий скоринг** — LLM дополняет правило-ориентированную модель, интерпретируя свободные ответы анкеты (цели, обстоятельства), которые плохо формализуются жёсткими правилами
+- **Разбор мотивационных эссе** — проверка структуры, соответствия требованиям конкретной программы, рекомендации по доработке
+- **Безопасность данных** — вызовы к LLM планируется делать через серверную функцию (ключ не попадает в клиентский код); данные пользователей не будут использоваться для дообучения публичных языковых моделей, а передаваться провайдеру только для получения ответа в реальном времени
 
-## 2. Put the site online for everyone (GitHub Pages, free)
+**Статус: не реализовано** — раздел описывает план развития, а не работающую функциональность текущей версии.
 
-You only do steps 1 to 5 once.
+## Технологии
 
-1. Create a free account at <https://github.com> (skip if you have one).
-2. Install **GitHub Desktop** from <https://desktop.github.com> and sign in with that account.
-3. In GitHub Desktop: **File > Add local repository**, choose this folder (`Desktop\personal-admission-route`). It says the folder is not a repository yet: click **create a repository**, keep the name `personal-admission-route`, and click **Create repository**. (Private files such as `DEVELOPER-ACCESS.txt` are excluded automatically by `.gitignore`.)
-4. Click **Publish repository**. **Untick** "Keep this code private" (GitHub Pages is free for public repositories), then click **Publish repository**.
-5. On github.com, open your new repository, then **Settings > Pages > Build and deployment > Source** and choose **GitHub Actions**.
-6. Open the **Actions** tab and wait for "Deploy to GitHub Pages" to show a green tick (about 2 minutes). If it ran before step 5 and failed, click it and choose **Re-run all jobs**.
+- **TypeScript + Vite**
+- Модульная структура без тяжёлого SPA-фреймворка: отдельные модули для лендинга, анкеты и дашборда
+- **Playwright** — 66 автотестов: десктоп и мобильные размеры экрана, полная анкета с валидацией, доступность (axe-core, WCAG 2.2 AA), все внутренние и внешние ссылки, скорость загрузки
+- Аналитика без cookies (GoatCounter), курсы валют — по справочным курсам ЕЦБ
+- **GitHub Pages** — хостинг, автопубликация через **GitHub Actions**
 
-After that, whenever you change something: in GitHub Desktop write a short summary, click **Commit to main**, then **Push origin**. The site updates itself in about 2 minutes.
+## Структура проекта
 
-Your address will be: `https://YOUR-GITHUB-NAME.github.io/personal-admission-route/`
+| `src/data/universities.ts` | 28 университетов с источниками данных |
+| `src/lib/scoring.ts` | Правило-ориентированный расчёт соответствия |
+| `src/lib/roadmap.ts` | Логика плана действий и чек-листа |
+| `src/landing/`, `src/onboarding/`, `src/dashboard/` | Главная страница, анкета, результаты |
+| `src/pages/` | Privacy, terms, refund, credits, 404 |
+| `src/config.ts` | Настройки команды, цены, аналитика |
+| `public/images/` | Оптимизированные изображения |
+| `tests/` | Автотесты (Playwright) |
+| `.github/workflows/` | Автопубликация на GitHub Pages |
 
-- HTTPS is on automatically for `github.io` addresses. If you later connect your own domain, tick **Enforce HTTPS** on the same Pages settings screen.
-- The sitemap, `robots.txt`, page links and social previews use the correct address automatically.
-
-## 3. Turn on visitor statistics (optional, 2 minutes)
-
-The site uses **GoatCounter**: free for non-commercial projects, no cookies, no personal data.
-
-1. Sign up at <https://www.goatcounter.com/signup> and pick a code, for example `satori-route`.
-2. Open `src/config.ts` and put the code between the quotes: `const GOATCOUNTER_CODE = 'satori-route';`
-3. Publish again (push). Visits are only counted for people who click **Allow analytics** in the privacy banner.
-
-## 4. Pro plan and the free developer access
-
-- **Free** shows the top 3 universities, the action plan and the checklist.
-- **Pro** ($29/month or $119/year, planned) shows every matching university and a comparison table.
-- Payments are **switched off**: the site never asks for card details. Buttons explain this honestly.
-- **Developer access (free Pro for the team):** the private code is in `DEVELOPER-ACCESS.txt` in this folder. Type it into the Pro window ("Developer access code") to unlock Pro on that browser. You can give it to the judges.
-- To create a new code: `node scripts/new-dev-code.mjs`, then publish again.
-
-**Honest limits:** Pro is unlocked inside the browser, so a technical person could bypass it. That is fine for a demo, but before charging real money you need a payment provider (for example Stripe or Paddle) plus a small server that checks subscriptions. GitHub Pages cannot run a server and its rules do not allow sites mainly used for selling. See section 7.
-
-## 5. Update university information
-
-All facts live in `src/data/universities.ts`, each with a link to the official page it came from and the date it was checked (19 September 2026). To update:
-
-1. Open the official page (the `sourceUrl` next to the number).
-2. Change the number or date in the file.
-3. Change `dataCheckedOn` in `src/config.ts`.
-4. Publish again.
-
-Exchange rates are in `src/data/rates.ts` (European Central Bank reference rates).
-
-## 6. Automated checks
+## Быстрый старт
 
 ```bash
-npx playwright install chromium   # first time only
+git clone https://github.com/louval77/Satori-website.git
+cd Satori-website
+
+npm install
+npm run dev       # режим разработки с горячей перезагрузкой
+npm run build     # production-сборка
+npm run preview   # локальный просмотр сборки — http://localhost:4173
+```
+
+## Деплой
+
+Публикация на GitHub Pages выполняется автоматически через GitHub Actions при пуше в ветку `main`. Настраивается один раз: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+
+## Тестирование
+
+```bash
+npx playwright install chromium   # один раз
 npm test
 ```
 
-66 checks run in a real browser, on desktop and phone sizes: the full questionnaire with its error messages, keyboard-only use, saved checklist, Pro unlock and lockout, accessibility (axe-core, WCAG 2.2 AA), page titles and descriptions, sitemap and robots.txt, the custom 404 page, every internal link, every official university link, cookie consent and analytics, the security policy, no leaked secrets, no sideways scrolling on phones and page speed.
+## Обновление данных по программам
 
-## 7. Things to do before a real public launch
+Все факты хранятся в `src/data/universities.ts` — у каждой записи есть `sourceUrl` (ссылка на официальную страницу программы) и дата последней проверки. Курсы валют — в `src/data/rates.ts`.
 
-- **Payments:** GitHub Pages is not allowed for sites mainly used for selling. Move to a host with server functions (Vercel, Netlify or Cloudflare) and add a payment provider.
-- **Kazakhstan law:** once you store user accounts or payments, personal data of Kazakhstan citizens must be kept on servers in Kazakhstan (Law "On Personal Data and Their Protection"), and consumer information should be available in Kazakh and Russian. Ask a lawyer before taking money.
-- **Minors:** many applicants are under 18. Paid plans must be bought by a parent or guardian.
-- **Data freshness:** fees and deadlines change every year. Re-check the official pages before each intake.
-- **GoatCounter** is free for non-commercial use only. A paid product needs its paid plan or another cookieless tool.
+## Что нужно учесть перед публичным запуском
 
-## Project map
+- GitHub Pages не предназначен для сайтов, основная цель которых — продажи: для приёма реальных платежей и серверных вызовов к LLM нужен хостинг с серверными функциями (Vercel, Netlify, Cloudflare) и платёжный провайдер
+- Согласно закону РК «О персональных данных и их защите», при хранении аккаунтов и платежей персональные данные граждан Казахстана должны обрабатываться на серверах внутри страны
+- Значительная часть абитуриентов — несовершеннолетние: оформление платных тарифов должно проходить через родителя или опекуна
+- Данные о стоимости обучения, покрытии расходов и сроках подачи документов нужно перепроверять перед каждым набором
 
-| Path | What it is |
-| --- | --- |
-| `src/data/universities.ts` | The 28 universities, with sources |
-| `src/lib/scoring.ts` | How the fit forecast is calculated (explained on the site) |
-| `src/lib/roadmap.ts` | Action plan and checklist tasks |
-| `src/landing/`, `src/onboarding/`, `src/dashboard/` | Home page, questionnaire, results |
-| `src/pages/` | Privacy, terms, refund, credits, 404 |
-| `src/config.ts` | Team details, prices, analytics, developer access |
-| `public/images/` | Compressed photos (credits on the Credits page) |
-| `tests/` | Playwright checks |
-| `.github/workflows/` | Automatic publishing to GitHub Pages |
+## Юридические документы
+
+- [Политика конфиденциальности](https://louval77.github.io/Satori-website/privacy/)
+- [Условия использования](https://louval77.github.io/Satori-website/terms/)
+- [Политика возврата средств](https://louval77.github.io/Satori-website/refund/)
+
+## Команда
+
+Team SATORI (Казахстан)
