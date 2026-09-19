@@ -1,4 +1,4 @@
-import { AlertTriangle, CalendarClock, CheckCircle2, ExternalLink, GraduationCap, Languages, Wallet } from 'lucide-react';
+import { AlertTriangle, BedDouble, CalendarClock, CheckCircle2, ExternalLink, GraduationCap, Languages, Wallet } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { FitRing } from '../components/FitRing';
 import { Flag } from '../components/Flag';
@@ -51,6 +51,8 @@ export function MatchCard({ match, rank, featured = false }: { match: Match; ran
   const d = DESTINATIONS[u.destination];
   const cost = costSummary(match);
   const fundedAll = u.scholarships.find((s) => s.kind === 'automatic-all');
+  const h = match.housing;
+  const note = match.housingNote;
 
   return (
     <motion.article
@@ -80,7 +82,7 @@ export function MatchCard({ match, rank, featured = false }: { match: Match; ran
         </div>
       </div>
 
-      <dl className={`mt-5 grid gap-3 text-sm ${featured ? 'sm:grid-cols-3' : ''}`}>
+      <dl className={`mt-5 grid gap-3 text-sm ${featured ? 'sm:grid-cols-2' : ''}`}>
         <div>
           <dt className="flex items-center gap-2 text-dusk">
             <Wallet className="shrink-0 text-gold" size={16} strokeWidth={1.75} aria-hidden="true" /> Estimated tuition
@@ -100,6 +102,42 @@ export function MatchCard({ match, rank, featured = false }: { match: Match; ran
           </dt>
           <dd className="pl-6 font-semibold text-ink">{STATUS_LABEL[match.windowStatus]}</dd>
         </div>
+        {h && (
+          <div data-testid="housing">
+            <dt className="flex items-center gap-2 text-dusk">
+              <BedDouble className="shrink-0 text-gold" size={16} strokeWidth={1.75} aria-hidden="true" /> Dormitory
+            </dt>
+            <dd className="pl-6 font-semibold text-ink">{h.summary}</dd>
+            {featured && <dd className="pl-6 text-xs text-dusk">{h.detail}</dd>}
+            <dd className="mt-1 flex flex-wrap gap-x-3 gap-y-1 pl-6 text-xs font-semibold">
+              <a
+                href={h.sourceUrl}
+                {...EXTERNAL}
+                aria-label="Official housing page — Housing source"
+                className="inline-flex min-h-6 items-center gap-1 text-gold-soft underline underline-offset-2"
+              >
+                Official housing page <ExternalLink size={12} aria-hidden="true" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+              {h.costSourceUrl && h.costSourceUrl !== h.sourceUrl && (
+                <a href={h.costSourceUrl} {...EXTERNAL} className="inline-flex min-h-6 items-center gap-1 text-gold-soft underline underline-offset-2">
+                  Official cost page <ExternalLink size={12} aria-hidden="true" />
+                  <span className="sr-only">(opens in a new tab)</span>
+                </a>
+              )}
+            </dd>
+            {note && (
+              <dd className="mt-1 flex gap-1.5 pl-6 text-xs text-mist">
+                {note.good ? (
+                  <CheckCircle2 className="mt-px shrink-0 text-ok" size={13} strokeWidth={2} aria-hidden="true" />
+                ) : (
+                  <AlertTriangle className="mt-px shrink-0 text-gold" size={13} strokeWidth={2} aria-hidden="true" />
+                )}
+                {note.text}
+              </dd>
+            )}
+          </div>
+        )}
       </dl>
 
       {fundedAll && (
@@ -160,6 +198,7 @@ export function MatchCard({ match, rank, featured = false }: { match: Match; ran
         </ul>
         <p className="mt-3 text-xs text-dusk">{match.windowText}</p>
         {u.living && <p className="mt-2 text-xs text-dusk">{u.living.text}</p>}
+        {h && !featured && <p className="mt-2 text-xs text-dusk">{h.detail}</p>}
         {u.requirements?.map((r) => (
           <p key={r} className="mt-2 text-xs text-dusk">
             {r}
@@ -168,13 +207,13 @@ export function MatchCard({ match, rank, featured = false }: { match: Match; ran
         {u.note && <p className="mt-2 text-xs text-dusk">{u.note}</p>}
         <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs font-semibold">
           <li>
-            <a href={u.admissionsUrl} {...EXTERNAL} className="inline-flex items-center gap-1 text-gold-soft underline underline-offset-2">
+            <a href={u.admissionsUrl} {...EXTERNAL} className="inline-flex min-h-6 items-center gap-1 text-gold-soft underline underline-offset-2">
               Admissions page <ExternalLink size={12} aria-hidden="true" />
               <span className="sr-only">(opens in a new tab)</span>
             </a>
           </li>
           <li>
-            <a href={match.option.tuitionSourceUrl} {...EXTERNAL} className="inline-flex items-center gap-1 text-gold-soft underline underline-offset-2">
+            <a href={match.option.tuitionSourceUrl} {...EXTERNAL} className="inline-flex min-h-6 items-center gap-1 text-gold-soft underline underline-offset-2">
               Fee source <ExternalLink size={12} aria-hidden="true" />
               <span className="sr-only">(opens in a new tab)</span>
             </a>
@@ -184,7 +223,7 @@ export function MatchCard({ match, rank, featured = false }: { match: Match; ran
               <a
                 href={(match.option.local?.sourceUrl ?? match.option.english?.sourceUrl)!}
                 {...EXTERNAL}
-                className="inline-flex items-center gap-1 text-gold-soft underline underline-offset-2"
+                className="inline-flex min-h-6 items-center gap-1 text-gold-soft underline underline-offset-2"
               >
                 Language source <ExternalLink size={12} aria-hidden="true" />
                 <span className="sr-only">(opens in a new tab)</span>
@@ -192,11 +231,27 @@ export function MatchCard({ match, rank, featured = false }: { match: Match; ran
             </li>
           )}
           <li>
-            <a href={u.windowsSourceUrl} {...EXTERNAL} className="inline-flex items-center gap-1 text-gold-soft underline underline-offset-2">
+            <a href={u.windowsSourceUrl} {...EXTERNAL} className="inline-flex min-h-6 items-center gap-1 text-gold-soft underline underline-offset-2">
               Dates source <ExternalLink size={12} aria-hidden="true" />
               <span className="sr-only">(opens in a new tab)</span>
             </a>
           </li>
+          {h && (
+            <li>
+              <a href={h.sourceUrl} {...EXTERNAL} className="inline-flex min-h-6 items-center gap-1 text-gold-soft underline underline-offset-2">
+                Housing details page <ExternalLink size={12} aria-hidden="true" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            </li>
+          )}
+          {h?.costSourceUrl && h.costSourceUrl !== h.sourceUrl && (
+            <li>
+              <a href={h.costSourceUrl} {...EXTERNAL} className="inline-flex min-h-6 items-center gap-1 text-gold-soft underline underline-offset-2">
+                Official housing cost page <ExternalLink size={12} aria-hidden="true" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            </li>
+          )}
         </ul>
       </details>
     </motion.article>

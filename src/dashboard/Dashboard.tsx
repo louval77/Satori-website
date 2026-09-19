@@ -7,7 +7,7 @@ import { formatUsd, RATES_DATE } from '../data/rates';
 import { UNIVERSITIES } from '../data/universities';
 import { openProModal } from '../components/ProModal';
 import { Flag } from '../components/Flag';
-import { FIELD_LABEL, type Profile } from '../lib/profile';
+import { FIELD_LABEL, HOUSING_PREFERENCE_LABEL, type Profile } from '../lib/profile';
 import { buildTasks } from '../lib/roadmap';
 import { hiddenByLanguage, rankUniversities, type Match } from '../lib/scoring';
 import { usePlan } from '../lib/plan';
@@ -26,7 +26,7 @@ const WINDOW_SHORT = { open: 'Open', upcoming: 'Ahead', closed: 'Closed', unpubl
 function CompareTable({ matches }: { matches: Match[] }) {
   return (
     <div className="glass mt-5 overflow-x-auto rounded-3xl" data-testid="compare-table">
-      <table className="w-full min-w-[720px] text-left text-sm">
+      <table className="w-full min-w-[880px] text-left text-sm">
         <caption className="sr-only">All matching universities compared</caption>
         <thead>
           <tr className="border-b border-white/10 text-dusk">
@@ -35,7 +35,8 @@ function CompareTable({ matches }: { matches: Match[] }) {
             <th scope="col" className="px-3 py-3.5 font-semibold">Fit</th>
             <th scope="col" className="px-3 py-3.5 font-semibold">Tuition per year</th>
             <th scope="col" className="px-3 py-3.5 font-semibold">Teaching</th>
-            <th scope="col" className="px-5 py-3.5 font-semibold">Window</th>
+            <th scope="col" className="px-3 py-3.5 font-semibold">Window</th>
+            <th scope="col" className="px-5 py-3.5 font-semibold">Housing</th>
           </tr>
         </thead>
         <tbody>
@@ -54,7 +55,8 @@ function CompareTable({ matches }: { matches: Match[] }) {
               <td className="px-3 py-3 font-semibold tabular-nums">{m.score}%</td>
               <td className="px-3 py-3 text-mist">{costSummary(m).main}</td>
               <td className="px-3 py-3 text-mist">{m.option.teaching}</td>
-              <td className="px-5 py-3 text-mist">{WINDOW_SHORT[m.windowStatus]}</td>
+              <td className="px-3 py-3 text-mist">{WINDOW_SHORT[m.windowStatus]}</td>
+              <td className="px-5 py-3 text-mist">{m.housing?.summary ?? 'Not published'}</td>
             </tr>
           ))}
         </tbody>
@@ -100,6 +102,7 @@ export function Dashboard({ profile, onEdit, onStartOver }: DashboardProps) {
     `Budget ${formatUsd(profile.budgetUsd)} a year`,
     `Start ${profile.targetYear}`,
     profile.teaching === 'open' ? 'Any teaching language' : 'English-taught only',
+    `Housing: ${HOUSING_PREFERENCE_LABEL[profile.housing ?? 'unsure'].toLowerCase()}`,
   ];
 
   return (
@@ -208,8 +211,8 @@ export function Dashboard({ profile, onEdit, onStartOver }: DashboardProps) {
                 <Lock className="mt-1 shrink-0 text-gold" size={22} strokeWidth={1.75} aria-hidden="true" />
                 <p className="max-w-[56ch] text-mist">
                   Free shows your top {PRICING.freeMatches}. Pro ranks all {rest.length + top.length} universities that fit your
-                  answers (out of {UNIVERSITIES.length} in our list) and compares cost, teaching language and application windows
-                  side by side.
+                  answers (out of {UNIVERSITIES.length} in our list) and compares cost, teaching language, application windows and
+                  dorms side by side.
                 </p>
               </div>
               <button type="button" onClick={() => openProModal('yearly')} className="btn-ghost shrink-0 border-gold/60 px-5 py-2.5 text-sm text-gold-soft">

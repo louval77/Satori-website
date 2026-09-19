@@ -1,12 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { ArrowLeft, ArrowRight, BriefcaseBusiness, Cpu, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BedDouble, BriefcaseBusiness, CircleQuestionMark, Cpu, House, Sparkles } from 'lucide-react';
 import { Mascot, type MascotMood } from '../components/Mascot';
 import { Flag } from '../components/Flag';
 import { useDestination } from '../context/destination';
 import { DESTINATIONS, DESTINATION_ORDER, type DestinationId } from '../data/destinations';
 import { UNIVERSITIES } from '../data/universities';
-import { BUDGET, ENGLISH_LIMITS, FIELD_LABEL, FOCUS_OPTIONS, GPA_LIMITS, type EnglishTest, type GpaScale, type Profile } from '../lib/profile';
+import {
+  BUDGET,
+  ENGLISH_LIMITS,
+  FIELD_LABEL,
+  FOCUS_OPTIONS,
+  GPA_LIMITS,
+  HOUSING_PREFERENCE_LABEL,
+  type EnglishTest,
+  type GpaScale,
+  type HousingPreference,
+  type Profile,
+} from '../lib/profile';
 import { useMediaQuery } from '../lib/useMediaQuery';
 import { trackEvent } from '../lib/analytics';
 import { PAGES } from '../lib/links';
@@ -22,8 +33,29 @@ const INTRO: string[] = [
   "Hi, I'm Tori! Where would you love to study? Pick one place or several.",
   "Let's build your dream profile together! What's your focus?",
   'Now your grades and tests. Only the average grade is required.',
-  "Let's talk budget. I'll point out scholarships that could help.",
+  "Let's talk budget and housing. I'll point out scholarships and dorms that could help.",
   'Last one! When would you like to start?',
+];
+
+const HOUSING_CHOICES: { value: HousingPreference; description: string; icon: typeof House; reply: string }[] = [
+  {
+    value: 'dorm',
+    description: 'Show me where a dorm place is guaranteed.',
+    icon: BedDouble,
+    reply: "Dorms are a great way to make friends! I'll show where a place is guaranteed.",
+  },
+  {
+    value: 'flat',
+    description: 'I plan to rent near campus.',
+    icon: House,
+    reply: "Got it. I'll flag universities where first-year students live on campus.",
+  },
+  {
+    value: 'unsure',
+    description: 'Show me the options for each university.',
+    icon: CircleQuestionMark,
+    reply: "No problem. I'll show the housing options on every university card.",
+  },
 ];
 
 export function Onboarding({ initial, onComplete }: OnboardingProps) {
@@ -173,7 +205,7 @@ export function Onboarding({ initial, onComplete }: OnboardingProps) {
                 transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
               >
                 <h1 id="step-title" ref={headingRef} tabIndex={-1} className="font-display text-2xl font-bold tracking-tight outline-none sm:text-3xl">
-                  {['Where do you want to study?', 'What do you want to study?', 'Your grades and tests', 'Budget and funding', 'When do you want to start?'][step]}
+                  {['Where do you want to study?', 'What do you want to study?', 'Your grades and tests', 'Budget and housing', 'When do you want to start?'][step]}
                 </h1>
 
                 {/* Step 1: destinations and teaching language */}
@@ -442,8 +474,8 @@ export function Onboarding({ initial, onComplete }: OnboardingProps) {
                         </output>
                       </div>
                       <p id="budget-help" className="mt-2 text-sm text-dusk">
-                        Tuition only. Housing and living costs come on top; each university card shows its own estimate when one
-                        is published.
+                        Tuition only. Housing and living costs come on top; each university card shows its dorm and living
+                        costs when they are published.
                       </p>
                     </div>
 
@@ -472,6 +504,32 @@ export function Onboarding({ initial, onComplete }: OnboardingProps) {
                         ))}
                       </div>
                       <FieldError id={errId('scholarship')} message={errors.scholarship} />
+                    </fieldset>
+
+                    <fieldset data-field="housing" aria-describedby={`housing-help${errors.housing ? ` ${errId('housing')}` : ''}`}>
+                      <legend className="mb-3 text-sm font-bold text-ink">Where would you like to live?</legend>
+                      <div className="grid gap-3 sm:grid-cols-3">
+                        {HOUSING_CHOICES.map(({ value, description, icon: Icon, reply }) => (
+                          <ChoiceCard
+                            key={value}
+                            type="radio"
+                            name="housing"
+                            value={value}
+                            checked={draft.housing === value}
+                            onChange={() => {
+                              update('housing', value);
+                              say(reply, 'happy');
+                            }}
+                            icon={<Icon className="text-gold" size={20} strokeWidth={1.75} aria-hidden="true" />}
+                            title={HOUSING_PREFERENCE_LABEL[value]}
+                            description={description}
+                          />
+                        ))}
+                      </div>
+                      <p id="housing-help" className="mt-2 text-sm text-dusk">
+                        Housing does not change your fit forecast. It decides which dorm facts and tasks we show you.
+                      </p>
+                      <FieldError id={errId('housing')} message={errors.housing} />
                     </fieldset>
                   </div>
                 )}
@@ -530,6 +588,10 @@ export function Onboarding({ initial, onComplete }: OnboardingProps) {
                         <div className="flex gap-2">
                           <dt className="text-dusk">Budget:</dt>
                           <dd>${draft.budgetUsd.toLocaleString('en-US')} a year</dd>
+                        </div>
+                        <div className="flex gap-2">
+                          <dt className="text-dusk">Housing:</dt>
+                          <dd>{draft.housing ? HOUSING_PREFERENCE_LABEL[draft.housing] : 'Not sure yet'}</dd>
                         </div>
                         <div className="flex gap-2">
                           <dt className="text-dusk">Teaching:</dt>

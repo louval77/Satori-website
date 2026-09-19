@@ -217,10 +217,11 @@ export function Checklist({ tasks, done, onToggle, onReset }: RoadmapProps) {
                       <a
                         href={t.url}
                         {...EXTERNAL}
+                        aria-label={`Official page for ${t.title}`}
                         className="ml-10 inline-flex items-center gap-1 text-xs font-semibold text-gold-soft underline underline-offset-2"
                       >
                         Official page <ExternalLink size={12} aria-hidden="true" />
-                        <span className="sr-only">for {t.title} (opens in a new tab)</span>
+                        <span className="sr-only">(opens in a new tab)</span>
                       </a>
                     )}
                   </li>

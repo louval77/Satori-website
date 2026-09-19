@@ -1,8 +1,10 @@
 import credits from '../data/photo-credits.json';
 import { DESTINATIONS, DESTINATION_ORDER } from '../data/destinations';
 import { UNIVERSITIES, DATA_CHECKED_ON } from '../data/universities';
+import { HOUSING } from '../data/housing';
 import { RATES_DATE, RATES_SOURCE, RATES_URL } from '../data/rates';
 import { BASE, EXTERNAL, imageUrl } from '../lib/links';
+import { CN_ADDRESS_REGISTRATION_URL } from '../lib/roadmap';
 
 function sourcesFor(id: string): string[] {
   const u = UNIVERSITIES.find((x) => x.id === id)!;
@@ -13,6 +15,7 @@ function sourcesFor(id: string): string[] {
     if (o.local) urls.add(o.local.sourceUrl);
   }
   u.scholarships.forEach((s) => urls.add(s.url));
+  if (HOUSING[id]) urls.add(HOUSING[id].sourceUrl);
   return [...urls];
 }
 
@@ -106,6 +109,12 @@ export function Credits() {
             </li>,
           ];
         })}
+        <li>
+          Mainland China, address registration (Exit and Entry Administration Law, Article 39):{' '}
+          <a href={CN_ADDRESS_REGISTRATION_URL} {...EXTERNAL} className="break-all">
+            {CN_ADDRESS_REGISTRATION_URL.replace(/^https?:\/\//, '')}
+          </a>
+        </li>
         <li>
           {RATES_SOURCE}, {RATES_DATE}:{' '}
           <a href={RATES_URL} {...EXTERNAL}>

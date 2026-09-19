@@ -6,6 +6,9 @@ import { DESTINATIONS, type DestinationId } from '../data/destinations';
 import type { Match } from './scoring';
 import type { Profile } from './profile';
 
+/** Exit and Entry Administration Law of the PRC, Article 39 (National Immigration Administration). */
+export const CN_ADDRESS_REGISTRATION_URL = 'https://en.nia.gov.cn/n147418/n147458/c155978/content.html';
+
 export type MilestoneId = 'documents' | 'language' | 'applications' | 'scholarships' | 'visa';
 
 export interface Task {
@@ -27,7 +30,7 @@ export const MILESTONES: Milestone[] = [
   { id: 'language', title: 'Language tests', summary: 'The English or local-language scores your matches ask for.' },
   { id: 'applications', title: 'Applications', summary: 'Submit to your matches inside each window.' },
   { id: 'scholarships', title: 'Scholarships', summary: 'Government and university funding you can use.' },
-  { id: 'visa', title: 'Visa and arrival', summary: 'Student visa steps once you accept an offer.' },
+  { id: 'visa', title: 'Housing and visa', summary: 'Book your room and get your student visa once you accept an offer.' },
 ];
 
 export function buildTasks(profile: Profile, top: Match[]): Task[] {
@@ -144,6 +147,36 @@ export function buildTasks(profile: Profile, top: Match[]): Task[] {
       milestone: 'scholarships',
       title: `Make your ${auto.map((m) => m.university.shortName).join(' and ')} application as strong as possible`,
       detail: 'These universities consider applicants for their scholarships automatically, with no extra form.',
+    });
+  }
+
+  // Housing: a task per match unless the student rents their own flat and the university allows it from day one.
+  for (const m of top) {
+    const h = m.housing;
+    if (!h || (profile.housing === 'flat' && !h.universityHousingFirst)) continue;
+    const name = m.university.shortName;
+    tasks.push({
+      id: `housing-${m.university.id}`,
+      milestone: 'visa',
+      title:
+        h.status === 'guaranteed'
+          ? `Confirm your ${name} housing place`
+          : h.status === 'unknown'
+            ? `Check ${name} housing options`
+            : `Apply for ${name} housing early`,
+      detail: h.detail,
+      url: h.sourceUrl,
+    });
+  }
+  if (profile.housing === 'flat') {
+    tasks.push({
+      id: 'housing-flat',
+      milestone: 'visa',
+      title: 'Plan your rental near campus',
+      detail: `Budget for rent, a deposit and furniture on top of tuition, and ask the international office for local housing advice.${
+        dests.includes('CN') ? ' In mainland China you must register your address with the local police within 24 hours of moving in.' : ''
+      }`,
+      url: dests.includes('CN') ? CN_ADDRESS_REGISTRATION_URL : undefined,
     });
   }
 

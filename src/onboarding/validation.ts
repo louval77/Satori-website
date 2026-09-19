@@ -1,6 +1,6 @@
 import type { DestinationId } from '../data/destinations';
 import type { Field } from '../data/universities';
-import { ENGLISH_LIMITS, GPA_LIMITS, type EnglishTest, type GpaScale, type Profile } from '../lib/profile';
+import { ENGLISH_LIMITS, GPA_LIMITS, type EnglishTest, type GpaScale, type HousingPreference, type Profile } from '../lib/profile';
 
 /** Everything the form holds while the user is typing (numbers stay strings until validated). */
 export interface Draft {
@@ -17,12 +17,13 @@ export interface Draft {
   topik: string;
   budgetUsd: number;
   scholarship: 'yes' | 'maybe' | 'no' | '';
+  housing: HousingPreference | '';
   targetYear: '2027' | '2028' | '';
 }
 
 export type Errors = Partial<Record<keyof Draft, string>>;
 
-export const STEPS = ['Destinations', 'Field', 'Grades and tests', 'Budget', 'Start date'] as const;
+export const STEPS = ['Destinations', 'Field', 'Grades and tests', 'Budget and housing', 'Start date'] as const;
 
 export function draftFromProfile(p: Profile | null): Draft {
   if (!p) {
@@ -40,6 +41,7 @@ export function draftFromProfile(p: Profile | null): Draft {
       topik: '0',
       budgetUsd: 15000,
       scholarship: '',
+      housing: '',
       targetYear: '',
     };
   }
@@ -57,6 +59,7 @@ export function draftFromProfile(p: Profile | null): Draft {
     topik: String(p.topik),
     budgetUsd: p.budgetUsd,
     scholarship: p.scholarship,
+    housing: p.housing ?? '',
     targetYear: String(p.targetYear) as '2027' | '2028',
   };
 }
@@ -104,6 +107,7 @@ export function validateStep(step: number, d: Draft): Errors {
   }
   if (step === 3) {
     if (!d.scholarship) e.scholarship = 'Tell us whether you need a scholarship.';
+    if (!d.housing) e.housing = 'Tell us where you would like to live.';
   }
   if (step === 4) {
     if (!d.targetYear) e.targetYear = 'Choose when you want to start.';
@@ -128,6 +132,7 @@ export function toProfile(d: Draft): Profile {
     topik: showTopik ? Number(d.topik) : 0,
     budgetUsd: d.budgetUsd,
     scholarship: (d.scholarship || 'maybe') as Profile['scholarship'],
+    housing: d.housing || 'unsure',
     targetYear: d.targetYear === '2028' ? 2028 : 2027,
   };
 }

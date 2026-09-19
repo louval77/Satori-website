@@ -1,5 +1,17 @@
 import { test, expect } from '@playwright/test';
+import { UNIVERSITIES } from '../src/data/universities';
+import { HOUSING } from '../src/data/housing';
 import { DECLINED, SAMPLE_PROFILE, seed, watchErrors } from './helpers';
+
+test('every university has official housing facts', () => {
+  for (const u of UNIVERSITIES) {
+    const h = HOUSING[u.id];
+    expect(h, u.id).toBeDefined();
+    expect(h!.sourceUrl, u.id).toMatch(/^https:\/\//);
+    expect(h!.summary.length, u.id).toBeGreaterThan(0);
+  }
+  expect(Object.keys(HOUSING).sort()).toEqual(UNIVERSITIES.map((u) => u.id).sort());
+});
 
 test.describe('landing page', () => {
   test('loads without errors and has one clear call to action', async ({ page }) => {
@@ -65,14 +77,17 @@ test.describe('questionnaire', () => {
     await page.getByLabel('English score').fill('7');
     await page.getByRole('button', { name: /Continue/ }).click();
 
-    // Step 4: scholarship answer required.
-    await expect(page.getByRole('heading', { name: 'Budget and funding' })).toBeVisible();
+    // Step 4: scholarship and housing answers required.
+    await expect(page.getByRole('heading', { name: 'Budget and housing' })).toBeVisible();
     await page.getByRole('button', { name: /Continue/ }).click();
     await expect(page.getByText('Tell us whether you need a scholarship.')).toBeVisible();
+    await expect(page.getByText('Tell us where you would like to live.')).toBeVisible();
     await page.getByText('It would help', { exact: true }).click();
+    await page.getByText('University dormitory', { exact: true }).click();
     await page.getByRole('button', { name: /Continue/ }).click();
 
     // Step 5: start year, then build.
+    await expect(page.getByText('Housing:', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: /Build my route/ }).click();
     await expect(page.getByText('Choose when you want to start.')).toBeVisible();
     await page.getByText('2027', { exact: true }).click();
@@ -83,6 +98,9 @@ test.describe('questionnaire', () => {
     const cards = page.getByTestId('match-card');
     await expect(cards.first()).toBeVisible();
     expect(await cards.count()).toBeLessThanOrEqual(3);
+    // Every card shows its dormitory facts.
+    await expect(page.getByTestId('housing')).toHaveCount(await cards.count());
+    await expect(page.getByText('Housing: university dormitory')).toBeVisible();
     await expect(page.getByTestId('checklist-progress')).toHaveText(/^0 of \d+ tasks completed$/);
     expect(errors).toEqual([]);
   });
@@ -135,6 +153,35 @@ test.describe('dashboard', () => {
     await expect(page).toHaveURL(/#start$/);
     const stored = await page.evaluate(() => localStorage.getItem('satori.profile.v1'));
     expect(stored).toBeNull();
+  });
+
+  test('dorm preference adds housing notes and a housing task per match', async ({ page }) => {
+    await seed(page, { ...DECLINED, 'satori.profile.v1': { ...SAMPLE_PROFILE, housing: 'dorm' } });
+    await page.goto('/#route');
+    const cards = page.getByTestId('match-card');
+    await expect(cards).toHaveCount(3);
+    for (const card of await cards.all()) {
+      const housing = card.getByTestId('housing');
+      await expect(housing.locator('dd')).not.toHaveCount(0);
+      await expect(card.getByRole('link', { name: /Housing source/ })).toHaveAttribute('href', /^https:\/\//);
+    }
+    await expect(page.locator('label', { hasText: /housing (place|options|early)/ })).toHaveCount(3);
+  });
+
+  test('flat preference adds a rental task instead of dorm tasks', async ({ page }) => {
+    await seed(page, { ...DECLINED, 'satori.profile.v1': { ...SAMPLE_PROFILE, housing: 'flat' } });
+    await page.goto('/#route');
+    await expect(page.getByText('Plan your rental near campus')).toBeVisible();
+    // SAMPLE_PROFILE includes mainland China, so the police registration rule is listed.
+    await expect(page.getByText(/register your address with the local police within 24 hours/)).toBeVisible();
+    await expect(page.getByText('Housing: my own flat')).toBeVisible();
+  });
+
+  test('plans saved before the housing question still load', async ({ page }) => {
+    await seed(page, { ...DECLINED, 'satori.profile.v1': SAMPLE_PROFILE });
+    await page.goto('/#route');
+    await expect(page.getByTestId('match-card')).toHaveCount(3);
+    await expect(page.getByText('Housing: not sure yet')).toBeVisible();
   });
 
   test('a route link without saved answers goes to the questionnaire', async ({ page }) => {

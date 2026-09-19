@@ -3,6 +3,7 @@ import type { Field } from '../data/universities';
 
 export type GpaScale = '5' | '4' | '100';
 export type EnglishTest = 'none' | 'ielts' | 'toefl120' | 'toefl6';
+export type HousingPreference = 'dorm' | 'flat' | 'unsure';
 
 export interface Profile {
   destinations: DestinationId[];
@@ -18,6 +19,8 @@ export interface Profile {
   teaching: 'english-only' | 'open';
   budgetUsd: number;
   scholarship: 'yes' | 'maybe' | 'no';
+  /** Optional so plans saved before the housing question still load. */
+  housing?: HousingPreference;
   targetYear: 2027 | 2028;
 }
 
@@ -45,6 +48,12 @@ export const ENGLISH_LIMITS: Record<Exclude<EnglishTest, 'none'>, { min: number;
 
 export const BUDGET = { min: 0, max: 45000, step: 500 };
 
+export const HOUSING_PREFERENCE_LABEL: Record<HousingPreference, string> = {
+  dorm: 'University dormitory',
+  flat: 'My own flat',
+  unsure: 'Not sure yet',
+};
+
 /** Grades as a percentage so different scales can be compared. */
 export function gpaPercent(p: Pick<Profile, 'gpa' | 'gpaScale'>): number {
   const max = GPA_LIMITS[p.gpaScale].max;
@@ -66,6 +75,7 @@ export function emptyProfile(): Profile {
     teaching: 'english-only',
     budgetUsd: 15000,
     scholarship: 'maybe',
+    housing: 'unsure',
     targetYear: 2027,
   };
 }
@@ -81,6 +91,7 @@ export function isProfile(value: unknown): value is Profile {
     typeof p.gpa === 'number' &&
     Number.isFinite(p.gpa) &&
     typeof p.budgetUsd === 'number' &&
+    (p.housing === undefined || p.housing === 'dorm' || p.housing === 'flat' || p.housing === 'unsure') &&
     (p.targetYear === 2027 || p.targetYear === 2028)
   );
 }

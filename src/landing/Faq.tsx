@@ -14,6 +14,10 @@ const FAQ: { q: string; a: ReactNode }[] = [
     a: `From the universities' and governments' official websites, read on ${SITE.dataCheckedOn}. Each figure on your dashboard links to its source. Fees and dates change every year, so confirm on the official page before you apply.`,
   },
   {
+    q: 'Will I get a place in a dormitory?',
+    a: 'It depends on the university. Some guarantee a room in the first year (for example HKUST, APU and Kyoto iUP), others give priority or have limited places. Each university card shows its housing rules, the published cost and a link to its housing page, and your checklist tells you when to apply for a room.',
+  },
+  {
     q: 'Do you store my answers?',
     a: (
       <>

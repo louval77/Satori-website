@@ -21,7 +21,7 @@ export function Privacy() {
         leaves your device and we cannot see it:
       </p>
       <ul>
-        <li>your questionnaire answers (destinations, field, grades, test scores, budget, start year);</li>
+        <li>your questionnaire answers (destinations, field, grades, test scores, budget, scholarship need, housing preference, start year);</li>
         <li>which checklist tasks you ticked;</li>
         <li>the destination you last selected for photos and colours;</li>
         <li>your analytics choice (allowed or declined);</li>

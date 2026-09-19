@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { UNIVERSITIES } from '../src/data/universities';
 import { DESTINATIONS } from '../src/data/destinations';
+import { HOUSING } from '../src/data/housing';
+import { CN_ADDRESS_REGISTRATION_URL } from '../src/lib/roadmap';
 import fs from 'node:fs';
 
 const credits: { sourceUrl: string }[] = JSON.parse(fs.readFileSync('src/data/photo-credits.json', 'utf8'));
@@ -48,6 +50,8 @@ test.describe('links', () => {
       urls.add(d.visa.url);
       urls.add(d.scholarship.url);
     });
+    Object.values(HOUSING).forEach((h) => urls.add(h.sourceUrl));
+    urls.add(CN_ADDRESS_REGISTRATION_URL);
     credits.forEach((c) => urls.add(c.sourceUrl));
 
     // 401/403/405/412/429 mean the site is up but blocks automated checks; a real browser opens them fine.

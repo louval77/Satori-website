@@ -12,8 +12,11 @@
  *   Scholarship support 15   only when you said you need funding
  *   Academic record     15   your grades (the same rule for every university)
  *   Timing              10   whether an application window is open or ahead
+ *
+ * Housing is never scored. It only adds a note for the student's housing preference.
  */
 import { UNIVERSITIES, type ProgramOption, type University, type Scholarship, type Field } from '../data/universities';
+import { HOUSING, type Housing } from '../data/housing';
 import { toUsd } from '../data/rates';
 import { gpaPercent, type Profile } from './profile';
 
@@ -65,6 +68,8 @@ export interface Match {
   tuitionUsdYear: number | null;
   windowStatus: WindowStatus;
   windowText: string;
+  housing: Housing | null;
+  housingNote: { good: boolean; text: string } | null;
 }
 
 const SCALE_NAME = { ielts: 'IELTS', toefl120: 'TOEFL iBT', toefl6: 'TOEFL iBT (new scale)' } as const;
@@ -256,6 +261,29 @@ function timingFactor(status: WindowStatus, targetYear: number): RawFactor {
   }
 }
 
+/** A housing note that follows the student's preference; null when there is nothing to add. */
+export function housingNote(h: Housing | null, profile: Profile): { good: boolean; text: string } | null {
+  if (!h) return null;
+  if (profile.housing === 'dorm') {
+    switch (h.status) {
+      case 'guaranteed':
+        return { good: true, text: 'You want a dorm, and new international students normally get a university room here.' };
+      case 'priority':
+        return { good: false, text: 'Dorm places get priority but are not guaranteed. Apply for housing as early as you can.' };
+      case 'available':
+        return { good: false, text: 'Dorm rooms are offered but not promised. Apply for housing as soon as it opens.' };
+      case 'limited':
+        return { good: false, text: 'Dorm places are limited. Book the moment booking opens and keep a backup plan.' };
+      case 'unknown':
+        return { good: false, text: 'Check the housing website for dorm rules and prices before you accept an offer.' };
+    }
+  }
+  if (profile.housing === 'flat' && h.universityHousingFirst) {
+    return { good: false, text: 'New students here normally start in university housing, so plan to rent your own flat later.' };
+  }
+  return null;
+}
+
 function scoreOption(u: University, option: ProgramOption, profile: Profile, today: Date): Match {
   const tuitionUsdYear = annualTuitionUsd(option);
   const { status, text } = windowStatusFor(u, profile.targetYear, today);
@@ -269,7 +297,20 @@ function scoreOption(u: University, option: ProgramOption, profile: Profile, tod
   const score = Math.round(Math.max(0, Math.min(100, factors.reduce((s, f) => s + f.points, 0))));
   const reasons = factors.filter((f) => f.good).map((f) => f.note);
   const gaps = factors.filter((f) => !f.good).map((f) => f.note);
-  return { university: u, option, score, factors, reasons, gaps, tuitionUsdYear, windowStatus: status, windowText: text };
+  const housing = HOUSING[u.id] ?? null;
+  return {
+    university: u,
+    option,
+    score,
+    factors,
+    reasons,
+    gaps,
+    tuitionUsdYear,
+    windowStatus: status,
+    windowText: text,
+    housing,
+    housingNote: housingNote(housing, profile),
+  };
 }
 
 /** Ranks every eligible university for a profile, best first. */

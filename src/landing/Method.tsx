@@ -28,6 +28,10 @@ export function Method() {
             University facts were read on official websites on {SITE.dataCheckedOn}. Prices use {RATES_SOURCE} from{' '}
             {RATES_DATE}. Always confirm on the official page before you apply.
           </p>
+          <p className="mt-4 max-w-[46ch] text-sm leading-relaxed text-dusk">
+            Dormitories are not part of the score. Every university card shows whether a dorm place is guaranteed, what it
+            costs when the university publishes it, and a link to its housing page.
+          </p>
         </Reveal>
 
         <ol className="space-y-3">
